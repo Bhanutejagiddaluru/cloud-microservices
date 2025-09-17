@@ -1,0 +1,21 @@
+name: ci
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Lint (basic)
+        run: python -m py_compile services/ml-service/app.py || true
+      - name: Build containers
+        run: |
+          docker build -t demo/gateway:sha-${{ github.sha }} services/gateway
+          docker build -t demo/ml-service:sha-${{ github.sha }} services/ml-service
+          docker build -t demo/orders-service:sha-${{ github.sha }} services/orders-service

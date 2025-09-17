@@ -1,0 +1,76 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: gateway
+spec:
+  replicas: 1
+  selector:
+    matchLabels: { app: gateway }
+  template:
+    metadata:
+      labels: { app: gateway }
+    spec:
+      containers:
+      - name: gateway
+        image: ghcr.io/example/gateway:latest
+        env:
+        - name: ML_SERVICE_URL
+          value: http://ml-service:9000
+        - name: ORDERS_SERVICE_URL
+          value: http://orders-service:7000
+        ports: [{containerPort: 8000}]
+---
+apiVersion: v1
+kind: Service
+metadata: { name: gateway }
+spec:
+  selector: { app: gateway }
+  ports: [{ port: 80, targetPort: 8000 }]
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ml-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels: { app: ml-service }
+  template:
+    metadata:
+      labels: { app: ml-service }
+    spec:
+      containers:
+      - name: ml-service
+        image: ghcr.io/example/ml-service:latest
+        ports: [{containerPort: 9000}]
+---
+apiVersion: v1
+kind: Service
+metadata: { name: ml-service }
+spec:
+  selector: { app: ml-service }
+  ports: [{ port: 9000, targetPort: 9000 }]
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: orders-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels: { app: orders-service }
+  template:
+    metadata:
+      labels: { app: orders-service }
+    spec:
+      containers:
+      - name: orders-service
+        image: ghcr.io/example/orders-service:latest
+        ports: [{containerPort: 7000}]
+---
+apiVersion: v1
+kind: Service
+metadata: { name: orders-service }
+spec:
+  selector: { app: orders-service }
+  ports: [{ port: 7000, targetPort: 7000 }]

@@ -1,0 +1,35 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: Serverless API for ingesting events into DynamoDB
+
+Resources:
+  EventsTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      BillingMode: PAYPERREQUEST
+      AttributeDefinitions:
+        - AttributeName: id
+          AttributeType: S
+      KeySchema:
+        - AttributeName: id
+          KeyType: HASH
+      TableName: !Sub "${AWS::StackName}-events"
+
+  IngestFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: ../serverless/
+      Handler: lambda_function.handler
+      Runtime: python3.11
+      Environment:
+        Variables:
+          TABLE_NAME: !Ref EventsTable
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: !Ref EventsTable
+      Events:
+        ApiEvent:
+          Type: Api
+          Properties:
+            Path: /ingest
+            Method: post

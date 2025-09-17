@@ -1,0 +1,30 @@
+services:
+  gateway:
+    build: ./services/gateway
+    ports:
+      - "8000:8000"
+    environment:
+      - ML_SERVICE_URL=http://ml-service:9000
+      - ORDERS_SERVICE_URL=http://orders-service:7000
+    depends_on:
+      - ml-service
+      - orders-service
+
+  ml-service:
+    build: ./services/ml-service
+    ports:
+      - "9000:9000"
+
+  orders-service:
+    build: ./services/orders-service
+    ports:
+      - "7000:7000"
+
+  frontend:
+    build: ./frontend
+    ports:
+      - "5173:5173"
+    environment:
+      - VITE_GATEWAY_URL=http://localhost:8000
+    depends_on:
+      - gateway

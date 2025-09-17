@@ -1,0 +1,20 @@
+{
+  "annotations": {
+    "list": []
+  },
+  "panels": [
+    {
+      "type": "graph",
+      "title": "Requests (gateway)",
+      "id": 1
+    },
+    {
+      "type": "graph",
+      "title": "Requests (ml)",
+      "id": 2
+    }
+  ],
+  "title": "Cloud-Native MLOps Demo",
+  "timezone": "browser",
+  "version": 1
+}
